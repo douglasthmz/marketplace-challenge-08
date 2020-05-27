@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 
 import AsyncStorage from '@react-native-community/async-storage';
-import { TotalProductsText } from 'src/pages/Cart/styles';
 
 interface Product {
   id: string;
@@ -33,7 +32,6 @@ const CartProvider: React.FC = ({ children }) => {
     async function loadProducts(): Promise<void> {
       const stringedProducts = await AsyncStorage.getItem('@Market:Products');
       if (stringedProducts !== null) setProducts(JSON.parse(stringedProducts));
-      // await AsyncStorage.clear();
     }
 
     loadProducts();
@@ -49,7 +47,6 @@ const CartProvider: React.FC = ({ children }) => {
         }
         return product;
       });
-      // console.log('entrei no increment', updatedProducts, id, products);
       setProducts(updatedProducts);
       await AsyncStorage.removeItem('@Market:Products');
       await AsyncStorage.setItem('@Market:Products', JSON.stringify(products));
@@ -63,14 +60,11 @@ const CartProvider: React.FC = ({ children }) => {
       const productExists = productsCopy.filter(
         singleProduct => singleProduct.id === product.id,
       );
-      // console.log(productExists.length, productExists);
       if (productExists.length > 0) {
-        // console.log('entrei no productExists', product.id);
         increment(product.id);
         return;
       }
       product.quantity = 1;
-      // console.log('addtocart', product);
       setProducts([...products, product]);
 
       await AsyncStorage.removeItem('@Market:Products');
@@ -84,12 +78,9 @@ const CartProvider: React.FC = ({ children }) => {
       const productsCopy = [...products];
       const selectedProduct = productsCopy.filter(product => product.id === id);
       let updatedProducts = [];
-      console.log('produto selecionado', JSON.stringify(selectedProduct, 0, 2));
       if (selectedProduct && selectedProduct[0].quantity === 1) {
         setProducts(state => state.filter(product => product.id !== id));
-        console.log('exclusão', JSON.stringify(selectedProduct, 0, 2));
       } else {
-        console.log('menos 1', JSON.stringify(products, 0, 2));
         updatedProducts = productsCopy.map(product => {
           if (product.id === id) {
             product.quantity -= 1;
@@ -99,7 +90,6 @@ const CartProvider: React.FC = ({ children }) => {
         });
         setProducts([...updatedProducts]);
       }
-      // console.log('entrei no decrement', updatedProducts, id, products);
       await AsyncStorage.removeItem('@Market:Products');
       await AsyncStorage.setItem('@Market:Products', JSON.stringify(products));
     },
